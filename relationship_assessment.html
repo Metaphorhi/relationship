@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恋爱关系评估工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .question-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        .question:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-text {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            font-weight: 600;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .result.continue {
+            background: linear-gradient(135deg, #a8e6cf, #88d8a3);
+            color: #2d5a41;
+        }
+        
+        .result.communicate {
+            background: linear-gradient(135deg, #ffd3a5, #fd9853);
+            color: #8b4513;
+        }
+        
+        .result.breakup {
+            background: linear-gradient(135deg, #ffa8a8, #ff6b6b);
+            color: #8b0000;
+        }
+        
+        .result h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .result p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💕 恋爱关系评估工具</h1>
+            <p>客观评估你的恋爱关系，获得专业建议</p>
+        </div>
+        
+        <form id="assessmentForm">
+            <div class="question-section">
+                <h2 class="section-title">💖 情感基础 (30分)</h2>
+                
+                <div class="question">
+                    <div class="question-text">1. 你们彼此相爱的程度如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q1" value="10" id="q1_1">
+                            <label for="q1_1">深深相爱，无法想象没有对方的生活 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" value="7" id="q1_2">
+                            <label for="q1_2">相爱，但有时会怀疑这段关系 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" value="4" id="q1_3">
+                            <label for="q1_3">有感情，但更像是习惯 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" value="1" id="q1_4">
+                            <label for="q1_4">感情已经很淡，主要是不舍得分开 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">2. 你们之间的沟通质量如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q2" value="10" id="q2_1">
+                            <label for="q2_1">非常开放，什么都能坦诚交流 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" value="7" id="q2_2">
+                            <label for="q2_2">大部分时候能沟通，但有些话题会回避 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" value="4" id="q2_3">
+                            <label for="q2_3">只聊日常，深层问题很少讨论 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" value="1" id="q2_4">
+                            <label for="q2_4">几乎不沟通重要问题，害怕冲突 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">3. 你们的价值观和人生目标是否一致？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q3" value="10" id="q3_1">
+                            <label for="q3_1">高度一致，对未来有共同规划 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" value="7" id="q3_2">
+                            <label for="q3_2">基本一致，小分歧可以协调 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" value="4" id="q3_3">
+                            <label for="q3_3">有不少分歧，但还能磨合 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" value="1" id="q3_4">
+                            <label for="q3_4">价值观差异很大，经常产生冲突 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-section">
+                <h2 class="section-title">🏠 现实条件 (25分)</h2>
+                
+                <div class="question">
+                    <div class="question-text">4. 你们的经济状况和社会地位差距如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q4" value="10" id="q4_1">
+                            <label for="q4_1">基本平等，或差距不影响关系 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" value="7" id="q4_2">
+                            <label for="q4_2">有差距但可以接受，不是主要问题 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" value="4" id="q4_3">
+                            <label for="q4_3">差距较大，偶尔会感到压力 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" value="1" id="q4_4">
+                            <label for="q4_4">差距悬殊，经常感到自卑或不平等 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">5. 你们的家庭支持情况如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q5" value="10" id="q5_1">
+                            <label for="q5_1">双方家庭都很支持这段关系 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" value="7" id="q5_2">
+                            <label for="q5_2">家庭基本支持，或中性态度 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" value="4" id="q5_3">
+                            <label for="q5_3">家庭态度复杂，有一定阻力 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" value="1" id="q5_4">
+                            <label for="q5_4">家庭强烈反对，完全没有支持 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">6. 地理位置和生活安排的匹配度如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q6" value="5" id="q6_1">
+                            <label for="q6_1">同城生活，或有明确的共同居住计划 (5分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" value="3" id="q6_2">
+                            <label for="q6_2">异地但有具体的团聚计划 (3分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" value="2" id="q6_3">
+                            <label for="q6_3">异地，团聚计划不明确 (2分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" value="0" id="q6_4">
+                            <label for="q6_4">异地且看不到解决方案 (0分)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-section">
+                <h2 class="section-title">⚖️ 关系平衡 (25分)</h2>
+                
+                <div class="question">
+                    <div class="question-text">7. 你们在关系中的付出是否平衡？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q7" value="10" id="q7_1">
+                            <label for="q7_1">付出基本平衡，互相照顾 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" value="7" id="q7_2">
+                            <label for="q7_2">有时不平衡，但总体公平 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" value="4" id="q7_3">
+                            <label for="q7_3">明显不平衡，但能接受 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" value="1" id="q7_4">
+                            <label for="q7_4">严重不平衡，感到委屈和疲惫 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">8. 你们对未来的承诺和规划是否一致？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q8" value="10" id="q8_1">
+                            <label for="q8_1">有明确的共同未来规划和时间表 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" value="7" id="q8_2">
+                            <label for="q8_2">大方向一致，细节需要协商 (7分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" value="4" id="q8_3">
+                            <label for="q8_3">对未来的想法比较模糊 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" value="1" id="q8_4">
+                            <label for="q8_4">从不讨论未来，或意见完全不同 (1分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">9. 你在这段关系中感到安全和被重视吗？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q9" value="5" id="q9_1">
+                            <label for="q9_1">非常安全，完全被重视和理解 (5分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" value="4" id="q9_2">
+                            <label for="q9_2">大部分时候感到安全和被重视 (4分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" value="2" id="q9_3">
+                            <label for="q9_3">有时感到不安全或被忽视 (2分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" value="0" id="q9_4">
+                            <label for="q9_4">经常感到不安全、不被重视 (0分)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-section">
+                <h2 class="section-title">⏰ 时间与发展 (20分)</h2>
+                
+                <div class="question">
+                    <div class="question-text">10. 你们在一起多长时间了？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q10" value="5" id="q10_1">
+                            <label for="q10_1">3年以下，还在磨合期 (5分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" value="8" id="q10_2">
+                            <label for="q10_2">3-5年，关系相对稳定 (8分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" value="6" id="q10_3">
+                            <label for="q10_3">5-8年，深度了解但可能疲惫 (6分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" value="3" id="q10_4">
+                            <label for="q10_4">8年以上，关系固化但缺乏进展 (3分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">11. 这段关系近期的发展趋势如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q11" value="10" id="q11_1">
+                            <label for="q11_1">越来越好，有明显的正向发展 (10分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q11" value="6" id="q11_2">
+                            <label for="q11_2">基本稳定，没有明显变化 (6分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q11" value="3" id="q11_3">
+                            <label for="q11_3">有些停滞，缺乏新的进展 (3分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q11" value="0" id="q11_4">
+                            <label for="q11_4">在退步，问题越来越多 (0分)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">12. 如果现状持续下去，你的感受如何？</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q12" value="5" id="q12_1">
+                            <label for="q12_1">很满意，希望一直这样下去 (5分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q12" value="3" id="q12_2">
+                            <label for="q12_2">可以接受，但希望有些改善 (3分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q12" value="1" id="q12_3">
+                            <label for="q12_3">不太满意，需要改变 (1分)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q12" value="0" id="q12_4">
+                            <label for="q12_4">很痛苦，不能继续下去 (0分)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="calculate-btn" onclick="calculateResult()">🔍 分析我的关系状况</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+    </div>
+    
+    <script>
+        function calculateResult() {
+            const form = document.getElementById('assessmentForm');
+            const formData = new FormData(form);
+            let totalScore = 0;
+            let answeredQuestions = 0;
+            
+            // 检查是否所有问题都已回答
+            for (let i = 1; i <= 12; i++) {
+                const answer = formData.get(`q${i}`);
+                if (answer) {
+                    totalScore += parseInt(answer);
+                    answeredQuestions++;
+                }
+            }
+            
+            if (answeredQuestions < 12) {
+                alert('请回答所有问题后再进行分析！');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            
+            // 根据得分给出建议
+            if (totalScore >= 75) {
+                resultDiv.className = 'result continue';
+                resultDiv.innerHTML = `
+                    <h2>🎉 继续交往</h2>
+                    <div class="score">总分：${totalScore}/100</div>
+                    <p><strong>恭喜！你们的关系状况良好。</strong></p>
+                    <p>💝 你们拥有稳固的感情基础和相对健康的关系模式。</p>
+                    <p>🌟 建议继续深化这段关系，可以考虑更长远的承诺。</p>
+                    <p>📈 保持良好的沟通，继续共同成长和规划未来。</p>
+                    <p>💪 遇到问题时要相信你们有能力一起解决。</p>
+                `;
+            } else if (totalScore >= 50) {
+                resultDiv.className = 'result communicate';
+                resultDiv.innerHTML = `
+                    <h2>💬 需要深度沟通</h2>
+                    <div class="score">总分：${totalScore}/100</div>
+                    <p><strong>你们的关系有潜力，但需要解决一些关键问题。</strong></p>
+                    <p>🗣️ 强烈建议进行一次深度、坦诚的对话。</p>
+                    <p>📋 制定具体的行动计划和时间表来解决现存问题。</p>
+                    <p>⏰ 设定3-6个月的观察期，看看情况是否有改善。</p>
+                    <p>🎯 如果问题得到解决，这段关系很有希望。</p>
+                    <p>⚠️ 如果经过努力仍无改善，需要考虑其他选择。</p>
+                `;
+            } else {
+                resultDiv.className = 'result breakup';
+                resultDiv.innerHTML = `
+                    <h2>💔 建议理性分手</h2>
+                    <div class="score">总分：${totalScore}/100</div>
+                    <p><strong>很遗憾，这段关系存在根本性问题。</strong></p>
+                    <p>🤔 关系中的核心问题可能难以通过努力解决。</p>
+                    <p>⏳ 继续下去可能会浪费双方宝贵的时间和精力。</p>
+                    <p>🌱 分开或许是对彼此最好的选择，给彼此寻找更合适伴侣的机会。</p>
+                    <p>💙 如果决定分手，要以尊重和理解的方式进行。</p>
+                    <p>🔄 这段经历是宝贵的成长机会，会帮助你找到更适合的人。</p>
+                `;
+            }
+            
+            // 滚动到结果区域
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
